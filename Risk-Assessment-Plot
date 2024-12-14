@@ -1,0 +1,79 @@
+### Risk analysis of discrepancies
+### 5th December 2024
+### Chloe V. Robinson
+
+# Load necessary libraries
+library(ggplot2)
+
+# Define risk levels and corresponding colors
+risk_levels <- c('Low', 'Moderate', 'High', 'Critical')
+colors <- c('green', 'yellow', 'orange', 'red')
+
+# Create a data frame for the risk matrix
+risk_matrix <- expand.grid(Probability = factor(c('Very Unlikely', 'Unlikely', 'Possible', 'Likely', 'Very Likely'), 
+                                                levels = c('Very Unlikely', 'Unlikely', 'Possible', 'Likely', 'Very Likely')),
+                           Impact = factor(c('Very Low', 'Low', 'Moderate', 'High', 'Very High'), 
+                                           levels = c('Very Low', 'Low', 'Moderate', 'High', 'Very High')))
+
+# Assign the risk levels based on the probability and impact
+risk_matrix$Risk <- c(
+  'Low', 'Low', 'Low', 'Moderate', 'Moderate',
+  'Low', 'Low', 'Moderate', 'Moderate', 'High',
+  'Low', 'Moderate', 'High', 'High', 'Critical',
+  'Moderate', 'High', 'High', 'Critical', 'Critical',
+  'Moderate', 'High', 'Critical', 'Critical', 'Critical'
+)
+
+# Example risk points with assigned shapes (all using circles)
+risk_points <- data.frame(
+  Risk = c('Vessel Strikes - Killer Whales', 'Vessel Strikes - Humpback Whales', 'Vessel Disturbance - Killer Whales',
+           'Vessel Disturbance - Humpback Whales','Entanglement - Killer Whales', 'Entanglement - Humpback Whales',
+           'Water Pollution - Killer Whales', 'Water Pollution - Humpback Whales', 'Reduced Prey Availability - Killer Whales',
+           'Reduced Prey Availability - Humpback Whales'),
+  Probability = c(2, 3, 5, 5, 2, 4, 2, 2, 4, 3),
+  Impact = c(5, 5, 5, 4, 4, 5, 4, 3, 5, 5),
+  Category = c('Vessel Strikes - Killer Whales', 'Vessel Strikes - Humpback Whales', 'Vessel Disturbance - Killer Whales',
+               'Vessel Disturbance - Humpback Whales','Entanglement - Killer Whales', 'Entanglement - Humpback Whales',
+               'Water Pollution - Killer Whales', 'Water Pollution - Humpback Whales', 'Reduced Prey Availability - Killer Whales',
+               'Reduced Prey Availability - Humpback Whales')
+)
+
+# Reorganize risk levels in the correct order (red, orange, yellow, green)
+risk_matrix$Risk <- factor(risk_matrix$Risk, levels = c('Critical', 'High', 'Moderate', 'Low'))
+
+
+# Create a mapping of categories to colors
+category_colors <- c('Vessel Strikes - Killer Whales' = 'black', 'Vessel Strikes - Humpback Whales' = 'darkgray', 
+                     'Vessel Disturbance - Killer Whales' = 'navy', 'Vessel Disturbance - Humpback Whales' = 'lightblue', 
+                     'Entanglement - Killer Whales' = 'purple', 'Entanglement - Humpback Whales' = 'lavender', 
+                     'Water Pollution - Killer Whales' = 'darkgreen', 'Water Pollution - Humpback Whales' = 'forestgreen',
+                     'Reduced Prey Availability - Killer Whales' = 'yellow', 'Reduced Prey Availability - Humpback Whales' = 'lightpink')
+
+# Create the plot with legends for color, dark grid lines, and black outline around points
+plot1 <-ggplot(risk_matrix, aes(x = Probability, y = Impact, fill = Risk)) +
+  geom_tile(color = "black") +  # Adding dark grid lines around the tiles
+  scale_fill_manual(values = c('Critical' = 'red','High' = 'orange', 'Moderate' = 'yellow', 'Low' = 'green')) +
+  geom_point(data = risk_points, aes(x = Probability, y = Impact, color = Category), shape = 19, size = 4, 
+             position = position_jitter(width = 0.3, height = 0.3)) +  # Jitter to avoid overlap
+  scale_color_manual(values=c("black"))+
+  labs(x = "Probability", y = "Impact") +
+  scale_color_manual(name = "Risk Category", values = category_colors) +  # Custom color legend for categories
+  guides(color = guide_legend(override.aes = list(size = 5))) +  # Keep color legend and adjust size
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.x = element_text(face = "bold", size = 14),
+        axis.title.y = element_text(face = "bold", size = 14),
+        legend.title = element_text(face = "bold", size = 14),
+        legend.text = element_text(size = 14)) +
+  theme(legend.position = "right")  # Position legend to the right
+
+
+plot1
+
+# Save the plot as a high-resolution PNG
+ggsave("risk_matrix_plot.png", plot = plot1, width = 12, height = 8, dpi = 300)
+
+#####
+# END
+#####
