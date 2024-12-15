@@ -1,0 +1,60 @@
+### Salmon quota line plot
+### 14th December 2024
+### Chloe V. Robinson
+
+
+# Load ggplot2 library
+library(ggplot2)
+
+# Sample data
+data <- data.frame(
+  Year = rep(2020:2024, times = 4),
+  Species = rep(c("Chinook (Puget Sound)", "Chinook (Canadian Salish Sea)", 
+                  "Coho (Puget Sound)", "Coho (Canadian Salish Sea)"), each = 5),
+  Quota = c(
+    # Chinook (Puget Sound) quotas
+    40000, 35000, 35000, 38000, 37000,
+    # Chinook (Canadian Salish Sea) quotas
+    45000, 38000, 38000, 41000, 40000,
+    # Coho (Puget Sound) quotas
+    114000, 95000, 100000, 108000, 106800,
+    # Coho (Canadian Salish Sea) quotas
+    70000, 63000, 66000, 66000, 65000
+  )
+)
+
+# Assign custom colors to species
+species_colors <- c(
+  "Chinook (Puget Sound)" = "darkorange",
+  "Chinook (Canadian Salish Sea)" = "steelblue",
+  "Coho (Puget Sound)" = "forestgreen",
+  "Coho (Canadian Salish Sea)" = "purple"
+)
+
+# Create the line plot
+plot <- ggplot(data, aes(x = Year, y = Quota, color = Species, group = Species)) +
+  geom_line(size = 1.2) +         # Line size for better visibility
+  geom_point(size = 3) +          # Add points to the lines
+  scale_color_manual(values = species_colors) +  # Apply custom colors
+  labs(
+    title = "",
+    x = "Year",
+    y = "Quota (number of fish)",
+    color = "Species"
+  ) +
+  theme_minimal() +               # Minimal theme
+  theme(
+    axis.title = element_text(size = 14, face = "bold"),
+    axis.text = element_text(size = 12),
+    panel.grid = element_blank(),
+    axis.line = element_line(size = 1, color = "black"),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 12)
+  )
+
+# Save the plot as a PNG file
+ggsave("salmon_quotas_plot.png", plot = plot, width = 10, height = 6, dpi = 300)
+
+#####
+# END
+#####
